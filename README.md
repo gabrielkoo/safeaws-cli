@@ -5,6 +5,7 @@ with AI checking your command arguments against the command docs
 
 ## Dependencies
 
+- macOS / Linux
 - Python 3.6+
 - boto3
 - AWS CLI (Either Python or binary)
@@ -27,5 +28,5 @@ For security, it's recommended to setup an `sso-session` and use the `AWS_PROFIL
 ## Install
 
 ```bash
-curl https://raw.githubusercontent.com/gabrielkoo/safeaws/main/safeaws.py -o /usr/local/bin/safeaws && chmod +x /usr/local/bin/safeaws
+sudo curl https://raw.githubusercontent.com/gabrielkoo/safeaws-cli/main/safeaws.py -o /usr/local/bin/safeaws && sudo chmod +x /usr/local/bin/safeaws
 ```
