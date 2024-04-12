@@ -1,7 +1,6 @@
 # safeaws-cli
 
-An AWS CLI wrapper that helps you avoid common mistakes and pitfalls
-with AI checking your command arguments against the command docs
+An AWS CLI wrapper that helps you avoid common mistakes and pitfalls with Amazon Bedrock's Large Language Models, checking your command arguments against the command docs
 
 ## Dependencies
 
@@ -14,8 +13,8 @@ with AI checking your command arguments against the command docs
 
 Variable | Description | Default
 ---|---|---
-`SAFEAWS_AWS_PROFILE` | AWS profile to use | None
-`SAFEAWS_AWS_REGION` | AWS region to use for Bedrock Model | `us-east-1
+`SAFEAWS_AWS_PROFILE` | AWS profile to use | `None`
+`SAFEAWS_AWS_REGION` | AWS region to use for Bedrock Model | `us-east-1`
 `SAFEAWS_BEDROCK_MODEL_ID` | Bedrock Model ID to use for AI checking | `anthropic.claude-3-haiku-20240307-v1:0`
 `SAFEAWS_ANTHROPIC_VERSION` | Anthropic API version | `bedrock-2023-05-31`
 `SAFEAWS_MODEL_MAX_TOKENS` | Maximum tokens to generate | `1024`
