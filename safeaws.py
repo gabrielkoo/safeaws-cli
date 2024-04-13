@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -52,6 +53,51 @@ class AwsCommandError(Exception):
     pass
 
 
+def _clean_raw_aws_help_output(raw_help_output: str) -> str:
+    output = ''
+
+    in_shorthand_syntax = False
+    in_json_syntax = False
+
+    for l in raw_help_output.split('\n'):
+        if '\b' in l:
+            # l = re.sub(r'_\x08', '', l)
+            l = re.sub(r'.\x08', '', l)
+
+        if l.endswith('Shorthand Syntax:'):
+            in_shorthand_syntax = True
+            block_indent = len(l) - len(l.lstrip())
+            continue
+        elif l.endswith('JSON Syntax:'):
+            in_json_syntax = True
+            block_indent = len(l) - len(l.lstrip())
+            continue
+
+        if (in_shorthand_syntax or in_json_syntax):
+            if l.strip() == '':
+                continue
+            else:
+                len_leading_spaces = len(l) - len(l.lstrip())
+                if len_leading_spaces <= block_indent:
+                    in_shorthand_syntax = False
+                    in_json_syntax = False
+                    block_indent = 0
+                else:
+                    continue
+
+        if l.strip() == '':
+            continue
+
+        output += l + '\n'
+
+    # Remove all sections from 'GLOBAL OPTIONS' onwards
+    output = output.split('GLOBAL OPTIONS')[0]
+    # Remove cli input docs
+    output = output.split('       --cli-input-json | --cli-input-yaml')[0]
+
+    return output
+
+
 def get_aws_cli_help(command: list[str]) -> str:
     try:
         env = os.environ.copy()
@@ -63,15 +109,14 @@ def get_aws_cli_help(command: list[str]) -> str:
             # ignore stderr
             stderr=subprocess.DEVNULL,
         )
-        trimmed_help_output = raw_help_output.split('\nGLOBAL OPTIONS')[0]
-        return trimmed_help_output
+        return _clean_raw_aws_help_output(raw_help_output)
     except subprocess.CalledProcessError as e:
         error_message = f"Error getting AWS CLI help for command: `{' '.join(command)}`\n" + e.output
         sys.stderr.write(error_message)
         raise HelpTextError(error_message)
 
 
-def check_command_with_ai(command: list[str], help_text: str):
+def check_command_with_ai(command: list[str], help_text: str) -> bool:
     prompt = PROMPT_TEMPLATE.format(
         help_text=help_text,
         command=' '.join(command),
@@ -110,7 +155,6 @@ def execute_command(command: list[str]):
         subprocess.run(['aws'] + command, check=True)
         sys.stdout.write(f"Command '{' '.join(command)}' executed successfully.\n")
     except subprocess.CalledProcessError as e:
-        sys.stderr.write(f"Error executing command '{' '.join(command)}':\n{e.output}\n")
         raise AwsCommandError from e
 
 
@@ -134,9 +178,14 @@ def main():
 
     # Check the command with the AI model
     execute = check_command_with_ai(command, help_text)
-    if execute:
-        execute_command(command)
 
+    if not execute:
+        exit()
+
+    try:
+        execute_command(command)
+    except AwsCommandError:
+        exit(1)
 
 if __name__ == "__main__":
     try:
