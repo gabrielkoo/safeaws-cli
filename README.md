@@ -1,5 +1,7 @@
 # safeaws-cli
 
+![Demo Gif](demo.gif)
+
 An AWS CLI wrapper that helps you avoid common mistakes and pitfalls with Amazon Bedrock's Large Language Models, checking your command arguments against the command docs.
 
 As an AWS user, sometimes blindly executing CLI commands found online or copied from sources like Stack Overflow can lead to unintended outcomes, data loss, financial loss or security risks. 
@@ -12,8 +14,9 @@ But of course, running a GenAI model comes with costs. Do evaluate before using 
 
 - macOS / Linux
 - Python 3.6+
-- boto3
-- AWS CLI (Either Python or binary)
+- [boto3](https://pypi.org/project/boto3/) - install with `python3 -m pip install boto3`
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) (Either Python binding or binary)
+- An AWS account with Amazon Bedrock Claude 3 models enabled - refer to `SAFEAWS_BEDROCK_MODEL_ID`.
 
 ## Configuration
 
@@ -33,7 +36,10 @@ For security, it's recommended to setup an `sso-session` and use the `AWS_PROFIL
 ## Install
 
 ```bash
-sudo curl https://raw.githubusercontent.com/gabrielkoo/safeaws-cli/main/safeaws.py -o /usr/local/bin/safeaws && sudo chmod +x /usr/local/bin/safeaws
+#!/bin/bash
+sudo curl https://raw.githubusercontent.com/gabrielkoo/safeaws-cli/main/safeaws.py \
+  -o /usr/local/bin/safeaws && \
+sudo chmod +x /usr/local/bin/safeaws
 ```
 
 ## Usage
@@ -44,7 +50,7 @@ To use `safeaws-cli`, simply prefix your AWS CLI command with `safeaws`:
 
 For example:
 
-```bash
+```
 > safeaws s3 cp file.txt s3://my-bucket/path/
 
 The provided command appears to be correct and complete. However, here are a few points to consider:
