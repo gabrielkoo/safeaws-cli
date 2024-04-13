@@ -8,7 +8,7 @@ import sys
 
 try:
     import boto3
-except ImportError
+except ImportError:
     sys.stderr.write('boto3 is not installed. Install with the following command:\n    python3 -m pip install boto3')
     exit()
 
