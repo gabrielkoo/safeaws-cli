@@ -6,7 +6,11 @@ import re
 import subprocess
 import sys
 
-import boto3
+try:
+    import boto3
+except ImportError
+    sys.stderr.write('boto3 is not installed. Install with the following command:\n    python3 -m pip install boto3')
+    exit()
 
 AWS_REGION = os.getenv('SAFEAWS_REGION') or os.getenv('AWS_REGION') or 'us-east-1'
 AWS_PROFILE = os.getenv('SAFEAWS_PROFILE') or os.getenv('AWS_PROFILE')
